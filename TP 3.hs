@@ -136,7 +136,13 @@ cuantosTienenFragmento biblioteca fragmento = length (filter (==True) (map (tien
 tieneFragmento :: String -> Libro -> Bool
 tieneFragmento fragmento libro = fragmento == take (length fragmento) (texto libro)
 
-
+{-
+La evaluacion diferida es la manera que el lenguaje procesa los datos, va procesando los datos a medida que llegan.
+Esto sirve para poder trabajar con listas infinitas, por ejemplo al hacer:
+take 2 (repeat 'a') = aa
+Si la evaluacion no seria diferida el programa primero deberia de procesar la lista infinita y luego realizar la funcion take.
+Esta evaluacion sirvio principalmente a la ultima parte del TP
+-}
 
 ordenarGeneros :: [String] -> Biblioteca -> [String]
 ordenarGeneros [] biblioteca = []
