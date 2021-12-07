@@ -69,16 +69,18 @@ gameOfThrones = UnLibro "game of thrones" 410 "valar morghulis" ["fantasia"]
 donQuijote = UnLibro "don quijote" 24 "luchamos contra gigantes" ["aventura"]
 sherlockHolmes = UnLibro "sherlock holmes" 200 "elemental mi querido watson" ["policial","drama"]
 laTragedia = UnLibro "la tragedia" 410 "te amo" ["romantica","drama"]
-libroBasico = UnLibro "libro" 410 "Hola, como estas. " ["nada"]
 
 bibliotecaBabel = UnaBiblioteca "bibliotecaDeBabel" [principito,harryPotter,libro1] bibliotecaDeBabel
 bibliotecaBerlin = UnaBiblioteca "bibliotecaDeBerlin" [sherlockHolmes,harryPotter] bibliotecaDeBerlin
 bibliotecaAlejandria = UnaBiblioteca "bibliotecaDeAlejandria" [gameOfThrones,donQuijote] bibliotecaDeAlejandria
 bibliotecaParis = UnaBiblioteca "bibliotecaDeParis" [laTragedia,principito] bibliotecaDeParis
 bibliotecaArgentina = UnaBiblioteca "bibliotecaDeArgentina" [laTragedia,sherlockHolmes,gameOfThrones] bibliotecaDeArgentina
-bibliotecaBasica = UnaBiblioteca "bibliotecaInfinita" [] bibliotecaDeBabel
 
 listaDeBibliotecas = [bibliotecaBabel,bibliotecaBerlin,bibliotecaAlejandria,bibliotecaParis,bibliotecaArgentina]
+
+libroBasico = UnLibro "libro casi infinito" 410 "" ["nada"]
+infinitaBiblioteca = UnaBiblioteca "biblioteca Infinita" [] bibliotecaDeBabel
+simbolosPermitidos = "abcdefghijklmnopqrstuvwxyz ,."
 
 --Problemas de registración--
 
@@ -109,17 +111,22 @@ podriaEstar libro (x:xs)
 
 --Biblioteca… ¿infinita?--
 
-bibliotecaInfinita :: Biblioteca -> Libro -> (Libro -> [Libro]) -> Biblioteca
-bibliotecaInfinita biblioteca libro f = biblioteca {libros = f libro}
+bibliotecaInfinita :: Biblioteca -> Libro -> (Libro -> Number -> [Libro]) -> Biblioteca
+bibliotecaInfinita biblioteca libro f = biblioteca {libros = f libro 0}
 
-librosInfinitosLiteral :: Libro -> [Libro]
-librosInfinitosLiteral libro = libro {texto = foldl (++) [] (take 3200 (repeat (texto libro)))} : librosInfinitosLiteral libro
+librosInfinitosLiteral :: Libro -> Number -> [Libro]
+librosInfinitosLiteral libro k = libro {texto = (combinacion 3200 simbolosPermitidos) !! k} : librosInfinitosLiteral libro (k+1) -- 3200 por los 80 simbolos de los 40 renglones
 
-librosInfinitosSimplificada :: Libro -> [Libro]
-librosInfinitosSimplificada libro = libro {texto = foldl (++) [] (take 410 (repeat (texto libro)))} : librosInfinitosSimplificada libro
+librosInfinitosSimplificada :: Libro -> Number -> [Libro]
+librosInfinitosSimplificada libro k = libro {texto = (combinacion 410 simbolosPermitidos) !! k} : librosInfinitosSimplificada libro (k+1)
 
-librosInfinitosPersonalizada :: Libro -> [Libro]
-librosInfinitosPersonalizada libro = libro {texto = foldl (++) [] (take 2 (repeat (texto libro)))} : librosInfinitosPersonalizada libro
+librosInfinitosPersonalizada :: Libro -> Number -> [Libro]
+librosInfinitosPersonalizada libro k = libro {texto = (combinacion 10 simbolosPermitidos) !! k} : librosInfinitosPersonalizada libro (k+1)
+
+combinacion :: Number -> String -> [String]
+combinacion _ [] = []
+combinacion 0 _ = [[]]
+combinacion k (x:xs) = [x:ys | ys <- combinacion (k-1) (x:xs)] ++ combinacion k xs
 
 estaFragmentoTexto :: Biblioteca -> String -> Libro
 estaFragmentoTexto biblioteca fragmento = fragmentoTexto (libros biblioteca) fragmento
